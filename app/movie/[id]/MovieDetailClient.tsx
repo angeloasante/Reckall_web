@@ -1,0 +1,304 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Movie, CastMember, getMovieCast, getSimilarMovies, buildImageUrl } from '@/lib/api';
+import Footer from '@/components/Footer';
+
+interface Props {
+  movie: Movie;
+}
+
+export default function MovieDetailClient({ movie }: Props) {
+  const [cast, setCast] = useState<CastMember[]>([]);
+  const [similarMovies, setSimilarMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [castData, similarData] = await Promise.all([
+          getMovieCast(movie.id),
+          getSimilarMovies(movie.id), // Use database ID, not tmdb_id
+        ]);
+        console.log('Cast data:', castData);
+        console.log('Similar movies:', similarData);
+        setCast(castData);
+        setSimilarMovies(similarData);
+      } catch (error) {
+        console.error('Error fetching movie data:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [movie.id]);
+
+  const backdropUrl = movie.backdrop_url || movie.poster_url;
+
+  return (
+    <main className="min-h-screen bg-background">
+      {/* Hero Section with Backdrop */}
+      <section className="relative h-[70vh] min-h-[500px]">
+        {/* Backdrop Image */}
+        {backdropUrl && (
+          <Image
+            src={backdropUrl}
+            alt={movie.title}
+            fill
+            className="object-cover"
+            priority
+          />
+        )}
+        
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent" />
+
+        {/* Back Button */}
+        <Link 
+          href="/"
+          className="absolute top-6 left-6 z-20 glass px-4 py-2 rounded-full flex items-center gap-2 hover:bg-white/20 transition-colors"
+        >
+          <span>←</span>
+          <span>Back</span>
+        </Link>
+
+        {/* Content */}
+        <div className="absolute bottom-0 left-0 right-0 p-8 md:p-16">
+          <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8 items-end">
+            {/* Poster */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="hidden md:block"
+            >
+              {movie.poster_url ? (
+                <Image
+                  src={movie.poster_url}
+                  alt={movie.title}
+                  width={250}
+                  height={375}
+                  className="rounded-2xl shadow-2xl"
+                />
+              ) : (
+                <div className="w-[250px] h-[375px] bg-secondary rounded-2xl flex items-center justify-center">
+                  <span className="text-6xl">🎬</span>
+                </div>
+              )}
+            </motion.div>
+
+            {/* Movie Info */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="flex-1"
+            >
+              <h1 className="text-4xl md:text-6xl font-bold mb-4">{movie.title}</h1>
+              
+              <div className="flex items-center gap-4 text-muted mb-6">
+                {movie.year && <span className="text-lg">{movie.year}</span>}
+                {movie.imdb_id && (
+                  <a
+                    href={`https://www.imdb.com/title/${movie.imdb_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1 bg-yellow-500/20 text-yellow-500 rounded-full text-sm font-medium hover:bg-yellow-500/30 transition-colors"
+                  >
+                    IMDb
+                  </a>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap gap-4">
+                <motion.a
+                  href={`https://www.youtube.com/results?search_query=${encodeURIComponent(movie.title + ' ' + movie.year + ' trailer')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="glass px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-white/20 transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span>▶</span>
+                  <span>Watch Trailer</span>
+                </motion.a>
+                
+                <motion.a
+                  href={`https://www.justwatch.com/us/search?q=${encodeURIComponent(movie.title)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-primary hover:bg-primary/90 px-6 py-3 rounded-xl flex items-center gap-2 transition-colors"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span>📺</span>
+                  <span>Where to Watch</span>
+                </motion.a>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* Details Section */}
+      <section className="px-4 md:px-8 py-12">
+        <div className="max-w-6xl mx-auto">
+          {/* Overview */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mb-12"
+          >
+            <h2 className="text-2xl font-bold mb-4">Overview</h2>
+            <p className="text-muted text-lg leading-relaxed max-w-4xl">
+              {movie.overview || 'No overview available for this movie.'}
+            </p>
+          </motion.div>
+
+          {/* Cast Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mb-12"
+          >
+            <h2 className="text-2xl font-bold mb-6">Top Cast</h2>
+            {loading ? (
+              <div className="flex gap-4 overflow-x-auto pb-4">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="flex-shrink-0 w-32 text-center animate-pulse">
+                    <div className="w-24 h-24 mx-auto mb-3 rounded-full bg-secondary/50" />
+                    <div className="h-4 bg-secondary/50 rounded w-20 mx-auto mb-2" />
+                    <div className="h-3 bg-secondary/50 rounded w-16 mx-auto" />
+                  </div>
+                ))}
+              </div>
+            ) : cast.length > 0 ? (
+              <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+                {cast.map((member, index) => (
+                  <motion.div
+                    key={member.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex-shrink-0 w-32 text-center"
+                  >
+                    <div className="w-24 h-24 mx-auto mb-3 rounded-full overflow-hidden bg-secondary">
+                      {member.profile_path ? (
+                        <Image
+                          src={buildImageUrl(member.profile_path, 'w200') || ''}
+                          alt={member.actor_name}
+                          width={96}
+                          height={96}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-3xl">
+                          👤
+                        </div>
+                      )}
+                    </div>
+                    <p className="font-medium text-sm truncate">{member.actor_name}</p>
+                    {member.character_name && (
+                      <p className="text-xs text-muted truncate">{member.character_name}</p>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted">Cast information not available.</p>
+            )}
+          </motion.div>
+
+          {/* Similar Movies Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="mb-12"
+          >
+            <h2 className="text-2xl font-bold mb-6">More Like This</h2>
+            {loading ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="rounded-xl overflow-hidden bg-secondary/50">
+                      <div className="w-full aspect-[2/3] bg-secondary/30" />
+                      <div className="p-3">
+                        <div className="h-4 bg-secondary/50 rounded w-3/4 mb-2" />
+                        <div className="h-3 bg-secondary/50 rounded w-1/2" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : similarMovies.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {similarMovies.slice(0, 6).map((similar, index) => (
+                  <motion.div
+                    key={similar.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <Link href={`/movie/${similar.id}`}>
+                      <div className="movie-card rounded-xl overflow-hidden bg-secondary/50 hover:bg-secondary/70 transition-colors">
+                        {similar.poster_url ? (
+                          <Image
+                            src={similar.poster_url}
+                            alt={similar.title}
+                            width={200}
+                            height={300}
+                            className="w-full aspect-[2/3] object-cover"
+                          />
+                        ) : (
+                          <div className="w-full aspect-[2/3] bg-secondary flex items-center justify-center">
+                            <span className="text-4xl">🎬</span>
+                          </div>
+                        )}
+                        <div className="p-3">
+                          <h3 className="font-medium text-sm truncate">{similar.title}</h3>
+                          <p className="text-xs text-muted">{similar.year}</p>
+                        </div>
+                      </div>
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-muted">No similar movies found.</p>
+            )}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Download CTA */}
+      <section className="px-4 py-16 bg-secondary/30">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold mb-4">Identify Movies Instantly</h2>
+          <p className="text-muted mb-8">
+            Download Reckall to identify any movie from a video clip in seconds.
+          </p>
+          <motion.a
+            href="https://testflight.apple.com/join/pbcmZz3t"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-full text-lg font-semibold transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Download Reckall
+          </motion.a>
+        </div>
+      </section>
+
+      <Footer />
+    </main>
+  );
+}
