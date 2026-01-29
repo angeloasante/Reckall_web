@@ -140,7 +140,7 @@ export default function Home() {
       />
 
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-20 md:pt-0">
         {/* Overlay gradient for readability */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/50 to-background" />
 
