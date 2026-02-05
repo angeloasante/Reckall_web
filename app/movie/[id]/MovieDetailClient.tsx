@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Movie, CastMember, getMovieCast, getSimilarMovies, buildImageUrl } from '@/lib/api';
+import { getYouTubeTrailerLink, getJustWatchLink, openDeepLink } from '@/lib/deeplinks';
 import Footer from '@/components/Footer';
 
 interface Props {
@@ -116,29 +117,27 @@ export default function MovieDetailClient({ movie }: Props) {
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-4">
-                <motion.a
-                  href={`https://www.youtube.com/results?search_query=${encodeURIComponent(movie.title + ' ' + movie.year + ' trailer')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="glass px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-white/20 transition-colors"
+                <motion.button
+                  onClick={() => openDeepLink(getYouTubeTrailerLink(movie.title, movie.year))}
+                  className="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-xl flex items-center gap-2 transition-colors"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <span>▶</span>
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                  </svg>
                   <span>Watch Trailer</span>
-                </motion.a>
+                </motion.button>
                 
-                <motion.a
-                  href={`https://www.justwatch.com/us/search?q=${encodeURIComponent(movie.title)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <motion.button
+                  onClick={() => openDeepLink(getJustWatchLink(movie.title))}
                   className="bg-primary hover:bg-primary/90 px-6 py-3 rounded-xl flex items-center gap-2 transition-colors"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   <span>📺</span>
                   <span>Where to Watch</span>
-                </motion.a>
+                </motion.button>
               </div>
             </motion.div>
           </div>
