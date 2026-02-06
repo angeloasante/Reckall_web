@@ -151,7 +151,8 @@ export default function StreamingButtons({ providers, loading, onRefresh, justWa
   const renderProviderButton = (provider: StreamingProvider, index: number) => {
     const color = getServiceColor(provider.name);
     const icon = getServiceIcon(provider.name);
-    const linkUrl = justWatchUrl || '#';
+    // Use provider's direct URL, fallback to JustWatch, then fallback to #
+    const linkUrl = provider.url || justWatchUrl || '#';
     
     return (
       <motion.a

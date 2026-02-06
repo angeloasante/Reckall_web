@@ -253,6 +253,7 @@ export interface StreamingProvider {
   type: 'subscription' | 'rent' | 'buy' | 'free';
   logo_url: string | null;
   provider_id: number;
+  url: string | null; // Direct deep link to streaming service
 }
 
 export interface StreamingData {

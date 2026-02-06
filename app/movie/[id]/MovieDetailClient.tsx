@@ -179,13 +179,13 @@ export default function MovieDetailClient({ movie }: Props) {
                   </motion.div>
                 ) : primaryStreaming ? (
                   <motion.a
-                    href={justWatchUrl || '#'}
+                    href={primaryStreaming.url || justWatchUrl || '#'}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-primary hover:bg-primary/90 px-6 py-3 rounded-xl flex items-center gap-2 transition-colors"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={(e) => { if (!justWatchUrl) { e.preventDefault(); setShowStreamingModal(true); } }}
+                    onClick={(e) => { if (!primaryStreaming.url && !justWatchUrl) { e.preventDefault(); setShowStreamingModal(true); } }}
                   >
                     {primaryStreaming.logo_url ? (
                       <Image
