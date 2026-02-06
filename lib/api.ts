@@ -246,3 +246,73 @@ export function buildImageUrl(path: string | null, size: 'w200' | 'w500' | 'w780
   if (path.startsWith('http')) return path;
   return `https://image.tmdb.org/t/p/${size}${path}`;
 }
+
+// Streaming provider types (from TMDB)
+export interface StreamingProvider {
+  name: string;
+  type: 'subscription' | 'rent' | 'buy' | 'free';
+  logo_url: string | null;
+  provider_id: number;
+}
+
+export interface StreamingData {
+  providers: StreamingProvider[];
+  subscription: StreamingProvider[];
+  rent: StreamingProvider[];
+  buy: StreamingProvider[];
+  free: StreamingProvider[];
+  justwatch_url: string | null;
+  updated_at: string;
+  country: string;
+  cached?: boolean;
+}
+
+// In-memory cache for streaming data
+const streamingCache = new Map<number, { data: StreamingData; timestamp: number }>();
+const STREAMING_CACHE_TTL = 1000 * 60 * 60; // 1 hour local cache
+
+/**
+ * Get streaming availability for a movie
+ * Uses TMDB's watch/providers endpoint for real data
+ */
+export async function getStreamingProviders(movieId: number, forceRefresh = false): Promise<StreamingData> {
+  const emptyData: StreamingData = {
+    providers: [],
+    subscription: [],
+    rent: [],
+    buy: [],
+    free: [],
+    justwatch_url: null,
+    updated_at: new Date().toISOString(),
+    country: 'US',
+  };
+
+  try {
+    // Check local cache first (unless forcing refresh)
+    if (!forceRefresh) {
+      const cached = streamingCache.get(movieId);
+      if (cached && Date.now() - cached.timestamp < STREAMING_CACHE_TTL) {
+        console.log('Using local cached streaming data for movie:', movieId);
+        return cached.data;
+      }
+    }
+
+    const url = `${API_BASE_URL}/movies/${movieId}/streaming${forceRefresh ? '?refresh=true' : ''}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      console.error('Streaming API error:', response.status);
+      return emptyData;
+    }
+
+    const data: StreamingData = await response.json();
+    
+    // Store in local cache
+    streamingCache.set(movieId, { data, timestamp: Date.now() });
+    
+    return data;
+  } catch (error) {
+    console.error('Failed to fetch streaming providers:', error);
+    return emptyData;
+  }
+}

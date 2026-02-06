@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Movie, CastMember, getMovieCast, getSimilarMovies, buildImageUrl } from '@/lib/api';
-import { getYouTubeTrailerLink, getJustWatchLink, openDeepLink } from '@/lib/deeplinks';
+import { Movie, CastMember, StreamingProvider, getMovieCast, getSimilarMovies, getStreamingProviders, buildImageUrl } from '@/lib/api';
+import { getYouTubeTrailerLink, openDeepLink } from '@/lib/deeplinks';
+import StreamingButtons from '@/components/StreamingButtons';
 import Footer from '@/components/Footer';
 
 interface Props {
@@ -15,7 +16,11 @@ interface Props {
 export default function MovieDetailClient({ movie }: Props) {
   const [cast, setCast] = useState<CastMember[]>([]);
   const [similarMovies, setSimilarMovies] = useState<Movie[]>([]);
+  const [streamingProviders, setStreamingProviders] = useState<StreamingProvider[]>([]);
+  const [justWatchUrl, setJustWatchUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [streamingLoading, setStreamingLoading] = useState(true);
+  const [showStreamingModal, setShowStreamingModal] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -37,7 +42,40 @@ export default function MovieDetailClient({ movie }: Props) {
     fetchData();
   }, [movie.id]);
 
+  // Fetch streaming data separately (can take longer due to API call)
+  useEffect(() => {
+    async function fetchStreaming() {
+      setStreamingLoading(true);
+      try {
+        const data = await getStreamingProviders(movie.id);
+        setStreamingProviders(data.providers);
+        setJustWatchUrl(data.justwatch_url || null);
+      } catch (error) {
+        console.error('Error fetching streaming data:', error);
+      } finally {
+        setStreamingLoading(false);
+      }
+    }
+    fetchStreaming();
+  }, [movie.id]);
+
+  const handleRefreshStreaming = async () => {
+    setStreamingLoading(true);
+    try {
+      const data = await getStreamingProviders(movie.id, true);
+      setStreamingProviders(data.providers);
+      setJustWatchUrl(data.justwatch_url || null);
+    } catch (error) {
+      console.error('Error refreshing streaming data:', error);
+    } finally {
+      setStreamingLoading(false);
+    }
+  };
+
   const backdropUrl = movie.backdrop_url || movie.poster_url;
+
+  // Get the primary streaming option (first subscription service, or first available)
+  const primaryStreaming = streamingProviders.find(p => p.type === 'subscription') || streamingProviders[0];
 
   return (
     <main className="min-h-screen bg-background">
@@ -129,20 +167,99 @@ export default function MovieDetailClient({ movie }: Props) {
                   <span>Watch Trailer</span>
                 </motion.button>
                 
-                <motion.button
-                  onClick={() => openDeepLink(getJustWatchLink(movie.title))}
-                  className="bg-primary hover:bg-primary/90 px-6 py-3 rounded-xl flex items-center gap-2 transition-colors"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <span>📺</span>
-                  <span>Where to Watch</span>
-                </motion.button>
+                {/* Streaming Button - Shows primary service or "Where to Watch" */}
+                {streamingLoading ? (
+                  <motion.div
+                    className="bg-primary/50 px-6 py-3 rounded-xl flex items-center gap-2"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                    <span>Finding streams...</span>
+                  </motion.div>
+                ) : primaryStreaming ? (
+                  <motion.a
+                    href={justWatchUrl || '#'}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-primary hover:bg-primary/90 px-6 py-3 rounded-xl flex items-center gap-2 transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={(e) => { if (!justWatchUrl) { e.preventDefault(); setShowStreamingModal(true); } }}
+                  >
+                    {primaryStreaming.logo_url ? (
+                      <Image
+                        src={primaryStreaming.logo_url}
+                        alt={primaryStreaming.name}
+                        width={20}
+                        height={20}
+                        className="rounded"
+                        unoptimized
+                      />
+                    ) : (
+                      <span>📺</span>
+                    )}
+                    <span>Watch on {primaryStreaming.name}</span>
+                  </motion.a>
+                ) : (
+                  <motion.button
+                    onClick={() => setShowStreamingModal(true)}
+                    className="bg-primary hover:bg-primary/90 px-6 py-3 rounded-xl flex items-center gap-2 transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <span>📺</span>
+                    <span>Where to Watch</span>
+                  </motion.button>
+                )}
+
+                {/* More Options Button */}
+                {streamingProviders.length > 1 && (
+                  <motion.button
+                    onClick={() => setShowStreamingModal(true)}
+                    className="bg-secondary hover:bg-secondary/80 px-4 py-3 rounded-xl flex items-center gap-2 transition-colors"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <span>+{streamingProviders.length - 1} more</span>
+                  </motion.button>
+                )}
               </div>
             </motion.div>
           </div>
         </div>
       </section>
+
+      {/* Streaming Modal */}
+      {showStreamingModal && (
+        <div 
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowStreamingModal(false)}
+        >
+          <motion.div 
+            className="bg-background rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold">Where to Watch</h3>
+              <button 
+                onClick={() => setShowStreamingModal(false)}
+                className="text-muted hover:text-white transition-colors"
+              >
+                ✕
+              </button>
+            </div>
+            <StreamingButtons 
+              providers={streamingProviders} 
+              loading={streamingLoading}
+              onRefresh={handleRefreshStreaming}
+              justWatchUrl={justWatchUrl}
+            />
+          </motion.div>
+        </div>
+      )}
 
       {/* Details Section */}
       <section className="px-4 md:px-8 py-12">
@@ -158,6 +275,25 @@ export default function MovieDetailClient({ movie }: Props) {
             <p className="text-muted text-lg leading-relaxed max-w-4xl">
               {movie.overview || 'No overview available for this movie.'}
             </p>
+          </motion.div>
+
+          {/* Where to Watch Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="mb-12"
+          >
+            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
+              <span>📺</span> Where to Watch
+            </h2>
+            <div className="max-w-2xl">
+              <StreamingButtons 
+                providers={streamingProviders} 
+                loading={streamingLoading}
+                onRefresh={handleRefreshStreaming}
+              />
+            </div>
           </motion.div>
 
           {/* Cast Section */}
