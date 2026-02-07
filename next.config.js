@@ -17,10 +17,8 @@ const nextConfig = {
     // Use smaller default sizes for better performance
     deviceSizes: [640, 750, 828, 1080, 1200],
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
-    // Modern formats only with higher compression
+    // Modern formats only
     formats: ['image/avif', 'image/webp'],
-    // Lower quality for smaller file sizes (default is 75)
-    quality: 60,
   },
   
   // Compiler optimizations
