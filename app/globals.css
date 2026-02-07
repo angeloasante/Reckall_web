@@ -5,6 +5,8 @@
 :root {
   --background: #0a0e14;
   --foreground: #ffffff;
+  /* Primary color with better contrast for accessibility */
+  --primary: #818cf8; /* Lighter indigo for better contrast on dark bg */
 }
 
 * {

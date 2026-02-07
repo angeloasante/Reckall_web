@@ -23,7 +23,7 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-40 py-4 px-6">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link href="/">
+        <Link href="/" aria-label="Go to Reckall homepage">
           <motion.div 
             className="flex items-center gap-2"
             whileHover={{ scale: 1.05 }}
@@ -31,10 +31,11 @@ export default function Header() {
           >
             <Image
               src="/logo.png"
-              alt="Reckall"
+              alt=""
               width={40}
               height={40}
               className="w-10 h-10"
+              aria-hidden="true"
             />
             <span className="text-2xl font-bold gradient-text">Reckall</span>
           </motion.div>

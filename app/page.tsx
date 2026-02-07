@@ -286,7 +286,7 @@ export default function Home() {
                     </svg>
                   </motion.div>
                   
-                  <h3 className="text-2xl font-bold mb-2">Try It Now</h3>
+                  <p className="text-2xl font-bold mb-2">Try It Now</p>
                   <p className="text-muted mb-4">
                     Upload a video clip to identify the movie
                   </p>

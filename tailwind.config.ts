@@ -11,7 +11,8 @@ const config: Config = {
       colors: {
         background: '#0a0e14',
         foreground: '#ffffff',
-        primary: '#6366f1',
+        // Lighter primary for WCAG AA contrast on dark background
+        primary: '#818cf8',
         secondary: '#1e293b',
         accent: '#f97316',
         muted: '#94a3b8',

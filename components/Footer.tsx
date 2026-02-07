@@ -8,13 +8,14 @@ export default function Footer() {
     <footer className="border-t border-white/10">
       <div className="py-12 px-4">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2" aria-label="Go to Reckall homepage">
             <Image
               src="/logo.png"
-              alt="Reckall"
+              alt=""
               width={32}
               height={32}
               className="w-8 h-8"
+              aria-hidden="true"
             />
             <span className="text-2xl font-bold gradient-text">Reckall</span>
           </Link>
