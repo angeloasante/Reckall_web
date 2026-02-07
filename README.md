@@ -9,7 +9,9 @@ Reckall is an AI-powered movie identification platform that lets users upload vi
 - **Instant Movie Recognition** - Upload any video clip and let AI identify the movie in seconds
 - **AI-Powered Analysis** - Analyzes dialogue, recognizes actors, and processes visual scenes
 - **Movie Details** - View comprehensive movie information including cast, overview, and similar recommendations
-- **Streaming Links** - Find where to watch identified movies
+- **Where to Watch** - Real streaming URLs via JustWatch GraphQL API (Netflix, Disney+, Amazon Prime, Apple TV+, etc.)
+- **Streaming Buttons** - Horizontal scroll pill-shaped buttons with brand colors and platform logos
+- **YouTube Trailers** - Watch official trailers directly in the app
 - **Recently Identified** - Browse movies discovered by the Reckall community
 - **Responsive Design** - Beautiful, modern UI that works on all devices
 
@@ -20,6 +22,8 @@ Reckall is an AI-powered movie identification platform that lets users upload vi
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 - **Animations**: [Framer Motion](https://www.framer.com/motion/)
 - **Database**: [Supabase](https://supabase.com/)
+- **Streaming Data**: [JustWatch GraphQL API](https://www.justwatch.com/)
+- **Movie Data**: [TMDB API](https://www.themoviedb.org/)
 - **Deployment**: [Vercel](https://vercel.com/)
 
 ## 📁 Project Structure
@@ -34,9 +38,10 @@ web/
 │   └── movie/[id]/          # Movie detail pages
 ├── components/
 │   ├── Header.tsx           # Navigation header
-│   └── Footer.tsx           # Site footer
+│   ├── Footer.tsx           # Site footer
+│   └── StreamingButtons.tsx # Streaming service pills with brand colors
 ├── lib/
-│   └── api.ts               # API utilities
+│   └── api.ts               # API utilities & types
 └── public/
     ├── logo.png             # Reckall logo
     └── favicon.ico          # Site favicon

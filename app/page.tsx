@@ -77,8 +77,55 @@ export default function Home() {
     }
   };
 
+  // JSON-LD structured data for SEO
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        '@id': 'https://reckall.app/#website',
+        url: 'https://reckall.app',
+        name: 'Reckall',
+        description: 'Shazam for Movies - Identify any movie instantly with AI',
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: 'https://reckall.app/search?q={search_term_string}',
+          'query-input': 'required name=search_term_string',
+        },
+      },
+      {
+        '@type': 'Organization',
+        '@id': 'https://reckall.app/#organization',
+        name: 'Reckall',
+        url: 'https://reckall.app',
+        logo: 'https://reckall.app/logo.png',
+        sameAs: [
+          'https://twitter.com/reckallapp',
+        ],
+      },
+      {
+        '@type': 'SoftwareApplication',
+        name: 'Reckall',
+        operatingSystem: 'iOS',
+        applicationCategory: 'EntertainmentApplication',
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'USD',
+        },
+        description: 'Identify any movie by uploading a video clip. Works with dialogue, scenes, and actors.',
+      },
+    ],
+  };
+
   return (
     <main className="min-h-screen bg-background">
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      
       <Header />
       
       {/* Upload Progress Modal */}
@@ -310,17 +357,19 @@ export default function Home() {
               >
                 <div className="absolute left-0 top-0 w-48 h-64 rounded-2xl overflow-hidden shadow-xl rotate-[-6deg] z-10 border border-white/10">
                   <Image
-                    src="https://image.tmdb.org/t/p/w500/pzIddUEMWhWzfvLI3TwxUG2wGoi.jpg"
+                    src="https://image.tmdb.org/t/p/w342/pzIddUEMWhWzfvLI3TwxUG2wGoi.jpg"
                     alt="Movie scene"
                     fill
+                    sizes="192px"
                     className="object-cover"
                   />
                 </div>
                 <div className="absolute left-32 top-8 w-48 h-64 rounded-2xl overflow-hidden shadow-xl rotate-[4deg] border border-white/10">
                   <Image
-                    src="https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg"
+                    src="https://image.tmdb.org/t/p/w342/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg"
                     alt="Movie scene"
                     fill
+                    sizes="192px"
                     className="object-cover"
                   />
                 </div>
@@ -423,10 +472,11 @@ export default function Home() {
                     <div className="movie-card rounded-xl overflow-hidden bg-secondary/50">
                       {movie.poster_url ? (
                         <Image
-                          src={movie.poster_url}
+                          src={movie.poster_url.replace('/w500/', '/w342/')}
                           alt={movie.title}
                           width={200}
                           height={300}
+                          sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 16vw"
                           className="w-full aspect-[2/3] object-cover"
                           loading="lazy"
                         />

@@ -241,7 +241,7 @@ export async function getSimilarMovies(movieId: number): Promise<Movie[]> {
   }
 }
 
-export function buildImageUrl(path: string | null, size: 'w200' | 'w500' | 'w780' | 'original' = 'w500'): string | null {
+export function buildImageUrl(path: string | null, size: 'w185' | 'w200' | 'w342' | 'w500' | 'w780' | 'original' = 'w342'): string | null {
   if (!path) return null;
   if (path.startsWith('http')) return path;
   return `https://image.tmdb.org/t/p/${size}${path}`;

@@ -287,13 +287,11 @@ export default function MovieDetailClient({ movie }: Props) {
             <h2 className="text-2xl font-bold mb-6 flex items-center gap-3">
               <span>📺</span> Where to Watch
             </h2>
-            <div className="max-w-2xl">
-              <StreamingButtons 
-                providers={streamingProviders} 
-                loading={streamingLoading}
-                onRefresh={handleRefreshStreaming}
-              />
-            </div>
+            <StreamingButtons 
+              providers={streamingProviders} 
+              loading={streamingLoading}
+              onRefresh={handleRefreshStreaming}
+            />
           </motion.div>
 
           {/* Cast Section */}

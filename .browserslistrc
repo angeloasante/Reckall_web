@@ -1,0 +1,15 @@
+# Reckall - Modern browsers only
+# This eliminates legacy polyfills for Array.prototype.at, Object.hasOwn, etc.
+
+# Target browsers with >0.5% market share that support ES2022
+defaults and supports es6-module
+not dead
+not IE 11
+not op_mini all
+
+# Specifically target modern versions
+chrome >= 90
+firefox >= 90
+safari >= 14
+edge >= 90
+ios_saf >= 14
