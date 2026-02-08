@@ -80,7 +80,7 @@ export default function MovieDetailClient({ movie }: Props) {
   return (
     <main className="min-h-screen bg-background">
       {/* Hero Section with Backdrop */}
-      <section className="relative h-[70vh] min-h-[500px]">
+      <section className="relative min-h-[50vh] md:min-h-[70vh]">
         {/* Backdrop Image */}
         {backdropUrl && (
           <Image
@@ -93,8 +93,8 @@ export default function MovieDetailClient({ movie }: Props) {
         )}
         
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/50 to-transparent md:from-background/80 md:via-transparent" />
 
         {/* Back Button */}
         <Link 
@@ -106,58 +106,59 @@ export default function MovieDetailClient({ movie }: Props) {
         </Link>
 
         {/* Content */}
-        <div className="absolute bottom-0 left-0 right-0 p-8 md:p-16">
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-8 items-end">
-            {/* Poster */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="hidden md:block"
-            >
-              {movie.poster_url ? (
-                <Image
-                  src={movie.poster_url}
-                  alt={movie.title}
-                  width={250}
-                  height={375}
-                  className="rounded-2xl shadow-2xl"
-                />
-              ) : (
-                <div className="w-[250px] h-[375px] bg-secondary rounded-2xl flex items-center justify-center">
-                  <span className="text-6xl">🎬</span>
-                </div>
-              )}
-            </motion.div>
-
-            {/* Movie Info */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="flex-1"
-            >
-              <h1 className="text-4xl md:text-6xl font-bold mb-4">{movie.title}</h1>
-              
-              <div className="flex items-center gap-4 text-muted mb-6">
-                {movie.year && <span className="text-lg">{movie.year}</span>}
-                {movie.imdb_id && (
-                  <a
-                    href={`https://www.imdb.com/title/${movie.imdb_id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3 py-1 bg-yellow-500/20 text-yellow-500 rounded-full text-sm font-medium hover:bg-yellow-500/30 transition-colors"
-                  >
-                    IMDb
-                  </a>
+        <div className="relative z-10 min-h-[50vh] md:min-h-[70vh] flex items-end">
+          <div className="w-full p-4 pb-6 md:p-8 md:pb-12 lg:p-16">
+            <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-4 md:gap-8 items-center md:items-end">
+              {/* Poster - visible on all sizes */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="flex-shrink-0"
+              >
+                {movie.poster_url ? (
+                  <Image
+                    src={movie.poster_url}
+                    alt={movie.title}
+                    width={250}
+                    height={375}
+                    className="rounded-2xl shadow-2xl w-32 h-48 md:w-[200px] md:h-[300px] lg:w-[250px] lg:h-[375px] object-cover"
+                  />
+                ) : (
+                  <div className="w-32 h-48 md:w-[200px] md:h-[300px] lg:w-[250px] lg:h-[375px] bg-secondary rounded-2xl flex items-center justify-center">
+                    <span className="text-4xl md:text-6xl">🎬</span>
+                  </div>
                 )}
-              </div>
+              </motion.div>
+
+              {/* Movie Info */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="flex-1 text-center md:text-left"
+              >
+                <h1 className="text-2xl md:text-4xl lg:text-6xl font-bold mb-2 md:mb-4">{movie.title}</h1>
+              
+                <div className="flex items-center justify-center md:justify-start gap-4 text-muted mb-4 md:mb-6">
+                  {movie.year && <span className="text-base md:text-lg">{movie.year}</span>}
+                  {movie.imdb_id && (
+                    <a
+                      href={`https://www.imdb.com/title/${movie.imdb_id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1 bg-yellow-500/20 text-yellow-500 rounded-full text-sm font-medium hover:bg-yellow-500/30 transition-colors"
+                    >
+                      IMDb
+                    </a>
+                  )}
+                </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap justify-center md:justify-start gap-2 md:gap-4">
                 <motion.button
                   onClick={() => openDeepLink(getYouTubeTrailerLink(movie.title, movie.year))}
-                  className="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-xl flex items-center gap-2 transition-colors"
+                  className="bg-red-600 hover:bg-red-700 px-4 md:px-6 py-2.5 md:py-3 rounded-xl flex items-center gap-2 transition-colors text-sm md:text-base"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -217,7 +218,7 @@ export default function MovieDetailClient({ movie }: Props) {
                 {streamingProviders.length > 1 && (
                   <motion.button
                     onClick={() => setShowStreamingModal(true)}
-                    className="bg-secondary hover:bg-secondary/80 px-4 py-3 rounded-xl flex items-center gap-2 transition-colors"
+                    className="bg-secondary hover:bg-secondary/80 px-3 md:px-4 py-2.5 md:py-3 rounded-xl flex items-center gap-2 transition-colors text-sm md:text-base"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
@@ -227,6 +228,7 @@ export default function MovieDetailClient({ movie }: Props) {
               </div>
             </motion.div>
           </div>
+        </div>
         </div>
       </section>
 
@@ -262,17 +264,17 @@ export default function MovieDetailClient({ movie }: Props) {
       )}
 
       {/* Details Section */}
-      <section className="px-4 md:px-8 py-12">
+      <section className="px-4 md:px-8 py-8 md:py-12">
         <div className="max-w-6xl mx-auto">
           {/* Overview */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mb-12"
+            className="mb-8 md:mb-12"
           >
-            <h2 className="text-2xl font-bold mb-4">Overview</h2>
-            <p className="text-muted text-lg leading-relaxed max-w-4xl">
+            <h2 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">Overview</h2>
+            <p className="text-muted text-base md:text-lg leading-relaxed">
               {movie.overview || 'No overview available for this movie.'}
             </p>
           </motion.div>
@@ -301,46 +303,50 @@ export default function MovieDetailClient({ movie }: Props) {
             transition={{ delay: 0.3 }}
             className="mb-12"
           >
-            <h2 className="text-2xl font-bold mb-6">Top Cast</h2>
+            <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">Top Cast</h2>
             {loading ? (
               <div className="flex gap-4 overflow-x-auto pb-4">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="flex-shrink-0 w-32 text-center animate-pulse">
-                    <div className="w-24 h-24 mx-auto mb-3 rounded-full bg-secondary/50" />
-                    <div className="h-4 bg-secondary/50 rounded w-20 mx-auto mb-2" />
-                    <div className="h-3 bg-secondary/50 rounded w-16 mx-auto" />
+                  <div key={i} className="flex-shrink-0 w-24 md:w-32 text-center animate-pulse">
+                    <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-3 rounded-full bg-secondary/50" />
+                    <div className="h-4 bg-secondary/50 rounded w-16 md:w-20 mx-auto mb-2" />
+                    <div className="h-3 bg-secondary/50 rounded w-12 md:w-16 mx-auto" />
                   </div>
                 ))}
               </div>
             ) : cast.length > 0 ? (
-              <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+              <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
                 {cast.map((member, index) => (
                   <motion.div
                     key={member.id}
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex-shrink-0 w-32 text-center"
                   >
-                    <div className="w-24 h-24 mx-auto mb-3 rounded-full overflow-hidden bg-secondary">
-                      {member.profile_path ? (
-                        <Image
-                          src={buildImageUrl(member.profile_path, 'w200') || ''}
-                          alt={member.actor_name}
-                          width={96}
-                          height={96}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-3xl">
-                          👤
-                        </div>
+                    <Link 
+                      href={`/artist/${member.id}`}
+                      className="flex-shrink-0 w-24 md:w-32 text-center block group"
+                    >
+                      <div className="w-20 h-20 md:w-24 md:h-24 mx-auto mb-2 md:mb-3 rounded-full overflow-hidden bg-secondary group-hover:ring-2 group-hover:ring-primary transition-all">
+                        {member.profile_path ? (
+                          <Image
+                            src={buildImageUrl(member.profile_path, 'w200') || ''}
+                            alt={member.actor_name}
+                            width={96}
+                            height={96}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-2xl md:text-3xl">
+                            👤
+                          </div>
+                        )}
+                      </div>
+                      <p className="font-medium text-xs md:text-sm truncate group-hover:text-primary transition-colors">{member.actor_name}</p>
+                      {member.character_name && (
+                        <p className="text-xs text-muted truncate">{member.character_name}</p>
                       )}
-                    </div>
-                    <p className="font-medium text-sm truncate">{member.actor_name}</p>
-                    {member.character_name && (
-                      <p className="text-xs text-muted truncate">{member.character_name}</p>
-                    )}
+                    </Link>
                   </motion.div>
                 ))}
               </div>
@@ -354,25 +360,25 @@ export default function MovieDetailClient({ movie }: Props) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="mb-12"
+            className="mb-8 md:mb-12"
           >
-            <h2 className="text-2xl font-bold mb-6">More Like This</h2>
+            <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">More Like This</h2>
             {loading ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-4">
                 {[...Array(6)].map((_, i) => (
                   <div key={i} className="animate-pulse">
                     <div className="rounded-xl overflow-hidden bg-secondary/50">
                       <div className="w-full aspect-[2/3] bg-secondary/30" />
-                      <div className="p-3">
-                        <div className="h-4 bg-secondary/50 rounded w-3/4 mb-2" />
-                        <div className="h-3 bg-secondary/50 rounded w-1/2" />
+                      <div className="p-2 md:p-3">
+                        <div className="h-3 md:h-4 bg-secondary/50 rounded w-3/4 mb-1 md:mb-2" />
+                        <div className="h-2 md:h-3 bg-secondary/50 rounded w-1/2" />
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : similarMovies.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-4">
                 {similarMovies.slice(0, 6).map((similar, index) => (
                   <motion.div
                     key={similar.id}
@@ -381,7 +387,7 @@ export default function MovieDetailClient({ movie }: Props) {
                     transition={{ delay: index * 0.05 }}
                   >
                     <Link href={`/movie/${similar.id}`}>
-                      <div className="movie-card rounded-xl overflow-hidden bg-secondary/50 hover:bg-secondary/70 transition-colors">
+                      <div className="movie-card rounded-lg md:rounded-xl overflow-hidden bg-secondary/50 hover:bg-secondary/70 transition-colors">
                         {similar.poster_url ? (
                           <Image
                             src={similar.poster_url}
@@ -392,11 +398,11 @@ export default function MovieDetailClient({ movie }: Props) {
                           />
                         ) : (
                           <div className="w-full aspect-[2/3] bg-secondary flex items-center justify-center">
-                            <span className="text-4xl">🎬</span>
+                            <span className="text-2xl md:text-4xl">🎬</span>
                           </div>
                         )}
-                        <div className="p-3">
-                          <h3 className="font-medium text-sm truncate">{similar.title}</h3>
+                        <div className="p-2 md:p-3">
+                          <h3 className="font-medium text-xs md:text-sm truncate">{similar.title}</h3>
                           <p className="text-xs text-muted">{similar.year}</p>
                         </div>
                       </div>
@@ -412,7 +418,7 @@ export default function MovieDetailClient({ movie }: Props) {
       </section>
 
       {/* Download CTA */}
-      <section className="px-4 py-16 bg-secondary/30">
+      <section className="px-4 py-12 md:py-16 bg-secondary/30">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4">Identify Movies Instantly</h2>
           <p className="text-muted mb-8">
