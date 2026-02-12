@@ -63,9 +63,8 @@ export default function Home() {
         }
       );
 
-      // Navigate to movie detail page
-      const movieId = result.movie.tmdb_id || result.movie.id;
-      router.push(`/movie/${movieId}`);
+      // Navigate to movie detail page (use database ID, not tmdb_id)
+      router.push(`/movie/${result.movie.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to identify movie');
       setIsUploading(false);
@@ -468,7 +467,7 @@ export default function Home() {
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {recentMovies.map((movie) => (
                 <div key={movie.id}>
-                  <Link href={`/movie/${movie.tmdb_id || movie.id}`}>
+                  <Link href={`/movie/${movie.id}`}>
                     <div className="movie-card rounded-xl overflow-hidden bg-secondary/50">
                       {movie.poster_url ? (
                         <Image

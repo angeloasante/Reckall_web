@@ -60,7 +60,7 @@ function generateMovieJsonLd(movie: any) {
     description: movie.overview,
     datePublished: movie.year ? `${movie.year}-01-01` : undefined,
     image: movie.poster_url || movie.backdrop_url,
-    url: `https://reckall.app/movie/${movie.tmdb_id || movie.id}`,
+    url: `https://reckall.app/movie/${movie.id}`, // Use database ID for consistent URLs
     aggregateRating: movie.vote_average ? {
       '@type': 'AggregateRating',
       ratingValue: movie.vote_average,
