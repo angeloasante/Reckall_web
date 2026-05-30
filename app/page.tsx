@@ -63,8 +63,14 @@ export default function Home() {
         }
       );
 
-      // Navigate to movie detail page (use database ID, not tmdb_id)
-      router.push(`/movie/${result.movie.id}`);
+      // Navigate to movie detail page (use database ID, not tmdb_id).
+      // If the backend located the clip within the movie, carry the timestamp
+      // through as query params so the detail page can display it.
+      const ts = result.clip_timestamp;
+      const query = ts
+        ? `?clip_start=${encodeURIComponent(ts.start)}&clip_end=${encodeURIComponent(ts.end)}&clip_conf=${ts.confidence}`
+        : '';
+      router.push(`/movie/${result.movie.id}${query}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to identify movie');
       setIsUploading(false);

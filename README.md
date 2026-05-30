@@ -9,6 +9,7 @@ Reckall is an AI-powered movie identification platform that lets users upload vi
 - **Instant Movie Recognition** - Upload any video clip and let AI identify the movie in seconds
 - **AI-Powered Analysis** - Analyzes dialogue, recognizes actors, and processes visual scenes
 - **Movie Details** - View comprehensive movie information including cast, overview, and similar recommendations
+- **Scene Timestamp** - When recognition locates the uploaded clip within the movie (via subtitle matching), the detail page shows a "Scene at HH:MM:SS–HH:MM:SS" badge. Conditional — only rendered when the backend returns a `clip_timestamp`
 - **Where to Watch** - Real streaming URLs via JustWatch GraphQL API (Netflix, Disney+, Amazon Prime, Apple TV+, etc.)
 - **Streaming Buttons** - Horizontal scroll pill-shaped buttons with brand colors and platform logos
 - **YouTube Trailers** - Watch official trailers directly in the app
@@ -85,7 +86,7 @@ npm start
 ## 📱 Pages
 
 - **Homepage** (`/`) - Hero, How It Works, Recently Identified
-- **Movie Detail** (`/movie/[id]`) - Full movie info, cast, similar movies
+- **Movie Detail** (`/movie/[id]`) - Full movie info, cast, similar movies. Accepts optional `?clip_start=&clip_end=&clip_conf=` query params (set automatically after a recognition that found a match) to display the scene timestamp badge
 - **404 Page** - Custom "Scene Not Found" error page
 
 ## 🎨 Design System

@@ -4,16 +4,17 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Movie, CastMember, StreamingProvider, getMovieCast, getSimilarMovies, getStreamingProviders, buildImageUrl } from '@/lib/api';
+import { Movie, CastMember, StreamingProvider, ClipTimestamp, getMovieCast, getSimilarMovies, getStreamingProviders, buildImageUrl } from '@/lib/api';
 import { getYouTubeTrailerLink, openDeepLink } from '@/lib/deeplinks';
 import StreamingButtons from '@/components/StreamingButtons';
 import Footer from '@/components/Footer';
 
 interface Props {
   movie: Movie;
+  clipTimestamp?: ClipTimestamp | null;
 }
 
-export default function MovieDetailClient({ movie }: Props) {
+export default function MovieDetailClient({ movie, clipTimestamp }: Props) {
   const [cast, setCast] = useState<CastMember[]>([]);
   const [similarMovies, setSimilarMovies] = useState<Movie[]>([]);
   const [streamingProviders, setStreamingProviders] = useState<StreamingProvider[]>([]);
@@ -153,6 +154,19 @@ export default function MovieDetailClient({ movie }: Props) {
                     </a>
                   )}
                 </div>
+
+              {/* Scene timestamp — only shown when the clip was located in the movie */}
+              {clipTimestamp && (
+                <div className="flex justify-center md:justify-start mb-4 md:mb-6">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/15 text-primary rounded-full text-sm font-medium">
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="9" />
+                      <path d="M12 7v5l3 2" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <span>Scene at {clipTimestamp.start}–{clipTimestamp.end}</span>
+                  </div>
+                </div>
+              )}
 
               {/* Action Buttons */}
               <div className="flex flex-wrap justify-center md:justify-start gap-2 md:gap-4">

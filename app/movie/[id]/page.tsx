@@ -4,6 +4,7 @@ import MovieDetailClient from './MovieDetailClient';
 
 interface Props {
   params: { id: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -70,8 +71,21 @@ function generateMovieJsonLd(movie: any) {
   };
 }
 
-export default async function MoviePage({ params }: Props) {
+export default async function MoviePage({ params, searchParams }: Props) {
   const movie = await getMovieById(parseInt(params.id));
+
+  // Reconstruct the clip timestamp from query params (only set right after a
+  // recognition that found a match). Absent on normal/direct visits.
+  const clipStart = typeof searchParams?.clip_start === 'string' ? searchParams.clip_start : null;
+  const clipEnd = typeof searchParams?.clip_end === 'string' ? searchParams.clip_end : null;
+  const clipTimestamp =
+    clipStart && clipEnd
+      ? {
+          start: clipStart,
+          end: clipEnd,
+          confidence: Number(searchParams?.clip_conf) || 0,
+        }
+      : null;
 
   if (!movie) {
     return (
@@ -94,7 +108,7 @@ export default async function MoviePage({ params }: Props) {
           __html: JSON.stringify(generateMovieJsonLd(movie)),
         }}
       />
-      <MovieDetailClient movie={movie} />
+      <MovieDetailClient movie={movie} clipTimestamp={clipTimestamp} />
     </>
   );
 }

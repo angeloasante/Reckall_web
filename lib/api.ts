@@ -29,12 +29,24 @@ export interface CastMember {
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://reckallbackend-production.up.railway.app/api';
 
 // Recognition result type
+// Where in the movie the uploaded clip was located (via subtitle matching).
+// Optional — only present when the backend confidently finds a match.
+export interface ClipTimestamp {
+  start: string;        // "HH:MM:SS"
+  end: string;          // "HH:MM:SS"
+  start_ms?: number;
+  end_ms?: number;
+  confidence: number;   // 0..1
+  matched_text?: string;
+}
+
 export interface RecognitionResult {
   movie: Movie;
   confidence: number;
   matched_on?: string[];
   processing_time?: number;
   actors_detected?: string[];
+  clip_timestamp?: ClipTimestamp | null;
 }
 
 // Get recently identified movies from user_uploads table
